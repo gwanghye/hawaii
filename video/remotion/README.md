@@ -1,3 +1,13 @@
+# Remotion 영상 프로젝트
+
+두 개의 컴포지션이 있습니다.
+
+1. `HawaiiHoneymoon` — 하와이 신혼여행 하이라이트 (아래 참고)
+2. `RiskAssessmentTutorial` — 위험성평가 시스템(risk-assessment 앱) 사용 가이드.
+   Firebase 에뮬레이터에서 앱을 구동하고 Playwright로 실사용 흐름을 녹화한
+   클립(`public/rat/*.mp4`)에 인트로·챕터 카드·자막을 입힌 영상.
+   렌더: `npx remotion render src/index.ts RiskAssessmentTutorial out/risk-tutorial.mp4`
+
 # Hawaii Honeymoon 2026 — Remotion 영상
 
 여행 계획(`../../index.html`) 기반으로 React 코드로 만든 하이라이트 영상.
