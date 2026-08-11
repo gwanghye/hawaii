@@ -11,19 +11,19 @@ import {
   useVideoConfig,
 } from "remotion";
 
-/* scene durations (30fps) — paced for comfortable reading, ~2min total */
-const D_TITLE = 150;
-const D_PROBLEM = 330;
-const D_TYPES = 390;
-const D_FLOW = 330;
-const D_STEP1 = 390;
-const D_STEP2 = 450;
-const D_STEP3 = 510;
-const D_FUNNEL = 390;
-const D_COMPARE = 330;
-const D_EXPAND = 330;
+/* scene durations (30fps) — paced for comfortable reading, ~1min 40s total */
+const D_TITLE = 125;
+const D_PROBLEM = 275;
+const D_TYPES = 325;
+const D_FLOW = 275;
+const D_STEP1 = 325;
+const D_STEP2 = 375;
+const D_STEP3 = 425;
+const D_FUNNEL = 325;
+const D_COMPARE = 275;
+const D_EXPAND = 275;
 export const TOTAL_FRAMES =
-  D_TITLE + D_PROBLEM + D_TYPES + D_FLOW + D_STEP1 + D_STEP2 + D_STEP3 + D_FUNNEL + D_COMPARE + D_EXPAND; // 3600 = 120s
+  D_TITLE + D_PROBLEM + D_TYPES + D_FLOW + D_STEP1 + D_STEP2 + D_STEP3 + D_FUNNEL + D_COMPARE + D_EXPAND; // 3000 = 100s
 
 const GREEN_DARK = "#123524";
 const GREEN = "#1f5c3d";
@@ -998,8 +998,8 @@ const ExpandScene: React.FC = () => {
   const v = useVert();
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
-  const outroP = spring({ frame: frame - 215, fps, config: { damping: 200 }, durationInFrames: 35 });
-  const dim = interpolate(frame, [200, 228], [0, 1], {
+  const outroP = spring({ frame: frame - 170, fps, config: { damping: 200 }, durationInFrames: 35 });
+  const dim = interpolate(frame, [155, 183], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -1030,9 +1030,9 @@ const ExpandScene: React.FC = () => {
           </FadeUp>
         </div>
         <div style={{ display: "flex", flexDirection: v ? "column" : "row", gap: v ? 18 : 30 }}>
-          <Card img="scale.png" title="확장성" desc="지점별 규모가 달라도 동일 로직 적용 가능" delay={80} />
-          <Card img="fund.png" title="데이터 축적" desc="확정 이력을 활용해 AI 판정 정확도 지속 개선" delay={110} descNowrap />
-          <Card img="lock.png" title="협업·보안" desc="AX기획팀 협업 및 내부 보안 검토 기반 운영" delay={140} />
+          <Card img="scale.png" title="확장성" desc="지점별 규모가 달라도 동일 로직 적용 가능" delay={60} />
+          <Card img="fund.png" title="데이터 축적" desc="확정 이력을 활용해 AI 판정 정확도 지속 개선" delay={85} descNowrap />
+          <Card img="lock.png" title="협업·보안" desc="AX기획팀 협업 및 내부 보안 검토 기반 운영" delay={110} />
         </div>
       </SceneShell>
       <AbsoluteFill
