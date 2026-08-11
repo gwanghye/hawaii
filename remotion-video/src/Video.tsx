@@ -1,9 +1,11 @@
 import React from "react";
 import {
   AbsoluteFill,
+  Img,
   Series,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
@@ -29,6 +31,54 @@ const useIn = (delay = 0, damping = 200) => {
   const { fps } = useVideoConfig();
   return spring({ frame: frame - delay, fps, config: { damping }, durationInFrames: 30 });
 };
+
+/* round chip that holds a brand icon PNG */
+const BIcon: React.FC<{ src: string; size?: number; bg?: string }> = ({
+  src,
+  size = 92,
+  bg = "#e7efe7",
+}) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: "50%",
+      background: bg,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+    }}
+  >
+    <Img
+      src={staticFile(`brand/${src}`)}
+      style={{ width: size * 0.54, height: size * 0.54, objectFit: "contain" }}
+    />
+  </div>
+);
+
+/* white medallion for the type badge artwork (JPG on white) */
+const Medallion: React.FC<{ src: string; size?: number }> = ({ src, size = 190 }) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: "50%",
+      background: "#fff",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      boxShadow: "0 10px 26px rgba(18,53,36,0.18)",
+      flexShrink: 0,
+    }}
+  >
+    <Img
+      src={staticFile(`brand/${src}`)}
+      style={{ width: "88%", height: "88%", objectFit: "contain" }}
+    />
+  </div>
+);
 
 const FadeUp: React.FC<{
   delay?: number;
@@ -125,19 +175,20 @@ const Banner: React.FC<{ text: string; delay?: number }> = ({ text, delay = 0 })
         transform: `translateY(${(1 - p) * 40}px)`,
       }}
     >
-      <span style={{ fontSize: 40 }}>🎯</span>
+      <BIcon src="target.png" size={72} bg="#fff" />
       <span style={{ fontSize: 32, fontWeight: 700, color: "#fff", lineHeight: 1.4 }}>{text}</span>
     </div>
   );
 };
 
 const Card: React.FC<{
-  icon: string;
+  icon?: string;
+  img?: string;
   title: string;
   desc: string;
   delay: number;
   accent?: string;
-}> = ({ icon, title, desc, delay, accent = GREEN_DARK }) => {
+}> = ({ icon, img, title, desc, delay, accent = GREEN_DARK }) => {
   const p = useIn(delay);
   return (
     <div
@@ -152,21 +203,27 @@ const Card: React.FC<{
         boxShadow: "0 12px 30px rgba(18,53,36,0.08)",
       }}
     >
-      <div
-        style={{
-          width: 92,
-          height: 92,
-          borderRadius: "50%",
-          background: "#e7efe7",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 44,
-          marginBottom: 24,
-        }}
-      >
-        {icon}
-      </div>
+      {img ? (
+        <div style={{ marginBottom: 24 }}>
+          <BIcon src={img} size={92} />
+        </div>
+      ) : (
+        <div
+          style={{
+            width: 92,
+            height: 92,
+            borderRadius: "50%",
+            background: "#e7efe7",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 44,
+            marginBottom: 24,
+          }}
+        >
+          {icon}
+        </div>
+      )}
       <div style={{ fontSize: 36, fontWeight: 800, color: accent, marginBottom: 12 }}>{title}</div>
       <div style={{ fontSize: 27, color: GRAY, lineHeight: 1.5 }}>{desc}</div>
     </div>
@@ -194,7 +251,10 @@ const TitleScene: React.FC = () => {
         opacity: out,
       }}
     >
-      <div style={{ fontSize: 96, transform: `scale(${icons})`, marginBottom: 30 }}>🎥 🚗</div>
+      <div style={{ display: "flex", gap: 34, transform: `scale(${icons})`, marginBottom: 36 }}>
+        <BIcon src="cctv.png" size={130} bg="#fff" />
+        <BIcon src="car.png" size={130} bg="#fff" />
+      </div>
       <h1
         style={{
           fontSize: 106,
@@ -229,9 +289,9 @@ const TitleScene: React.FC = () => {
 const ProblemScene: React.FC = () => (
   <SceneShell title="왜 필요한가">
     <div style={{ display: "flex", gap: 38 }}>
-      <Card icon="📋" title="기존 한계" desc="수만 대 주차 데이터에서 수작업으로 부정주차 식별이 어려움" delay={10} />
-      <Card icon="🎯" title="운영 목표" desc="확실한 의심 차량만 선별해 담당자 확인 부담 최소화" delay={22} />
-      <Card icon="📈" title="핵심 변화" desc="월 단위 사후 점검에서 일 단위 선제 탐지로 전환" delay={34} />
+      <Card img="clipboard.png" title="기존 한계" desc="수만 대 주차 데이터에서 수작업으로 부정주차 식별이 어려움" delay={10} />
+      <Card img="target.png" title="운영 목표" desc="확실한 의심 차량만 선별해 담당자 확인 부담 최소화" delay={22} />
+      <Card img="growth.png" title="핵심 변화" desc="월 단위 사후 점검에서 일 단위 선제 탐지로 전환" delay={34} />
     </div>
     <Banner text="사람이 다 볼 수 없으니, 통계와 AI가 먼저 거르고 사람은 확인만 한다" delay={70} />
   </SceneShell>
@@ -241,14 +301,14 @@ const ProblemScene: React.FC = () => (
 
 const TypeCard: React.FC<{
   title: string;
-  icon: string;
+  badge: string;
   color: string;
   bg: string;
   border: string;
   items: string[];
   delay: number;
   fromRight?: boolean;
-}> = ({ title, icon, color, bg, border, items, delay, fromRight }) => {
+}> = ({ title, badge, color, bg, border, items, delay, fromRight }) => {
   const p = useIn(delay);
   const frame = useCurrentFrame();
   return (
@@ -263,22 +323,9 @@ const TypeCard: React.FC<{
         transform: `translateX(${(1 - p) * (fromRight ? 80 : -80)}px)`,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
         <span style={{ fontSize: 54, fontWeight: 900, color }}>{title}</span>
-        <span
-          style={{
-            width: 90,
-            height: 90,
-            borderRadius: "50%",
-            background: color,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 40,
-          }}
-        >
-          {icon}
-        </span>
+        <Medallion src={badge} size={210} />
       </div>
       {items.map((t, i) => {
         const ip = spring({
@@ -313,7 +360,7 @@ const TypesScene: React.FC = () => (
     <div style={{ display: "flex", gap: 44 }}>
       <TypeCard
         title="통근형"
-        icon="💼"
+        badge="badge-commuter.jpg"
         color={GREEN}
         bg="#f2f3f0"
         border="#dcdfd9"
@@ -322,7 +369,7 @@ const TypesScene: React.FC = () => (
       />
       <TypeCard
         title="팝업형"
-        icon="🎁"
+        badge="badge-popup.jpg"
         color={BLUE}
         bg="#eef3fb"
         border="#c9d8f0"
@@ -336,9 +383,10 @@ const TypesScene: React.FC = () => (
 
 /* ================= Scene 4: Flow overview ================= */
 
-const FlowBox: React.FC<{ tag: string; icon: string; tool: string; lines: string[]; delay: number }> = ({
+const FlowBox: React.FC<{ tag: string; icon?: string; img?: string; tool: string; lines: string[]; delay: number }> = ({
   tag,
   icon,
+  img,
   tool,
   lines,
   delay,
@@ -372,7 +420,13 @@ const FlowBox: React.FC<{ tag: string; icon: string; tool: string; lines: string
       >
         {tag}
       </div>
-      <div style={{ fontSize: 84, marginBottom: 10 }}>{icon}</div>
+      {img ? (
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+          <BIcon src={img} size={118} />
+        </div>
+      ) : (
+        <div style={{ fontSize: 84, marginBottom: 10 }}>{icon}</div>
+      )}
       <div style={{ fontSize: 25, fontWeight: 700, color: "#7c8a80", marginBottom: 22 }}>{tool}</div>
       {lines.map((l) => (
         <div key={l} style={{ fontSize: 30, fontWeight: 600, color: INK, lineHeight: 1.5 }}>
@@ -389,11 +443,11 @@ const FlowScene: React.FC = () => {
   return (
     <SceneShell title="한눈에 보는 운영 구조 — 매일 3단계">
       <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
-        <FlowBox tag="1. 통계 선별" icon="🔍" tool="Power BI" lines={["주차 raw 데이터", "z점수로 후보 추출"]} delay={8} />
+        <FlowBox tag="1. 통계 선별" img="analytics.png" tool="Power BI" lines={["주차 raw 데이터", "z점수로 후보 추출"]} delay={8} />
         <div style={{ fontSize: 60, color: "#9aa79e", fontWeight: 900, opacity: a1 }}>➜</div>
         <FlowBox tag="2. AI 판정" icon="🧠" tool="AI 분석" lines={["의심 · 보류 · 정상", "신뢰도 상 · 중 · 하"]} delay={32} />
         <div style={{ fontSize: 60, color: "#9aa79e", fontWeight: 900, opacity: a2 }}>➜</div>
-        <FlowBox tag="3. 담당자 확정" icon="✅" tool="Teams" lines={["Teams 알림 → CCTV 확인", "→ 징수"]} delay={56} />
+        <FlowBox tag="3. 담당자 확정" img="check.png" tool="Teams" lines={["Teams 알림 → CCTV 확인", "→ 징수"]} delay={56} />
       </div>
       <Banner text="고정 임계값이 아닌 상대 비교와 AI 맥락 판단으로, 통근형과 팝업형을 모두 놓치지 않도록 설계" delay={95} />
     </SceneShell>
@@ -402,8 +456,8 @@ const FlowScene: React.FC = () => {
 
 /* ================= Scene 5: STEP 1 — statistics ================= */
 
-const ZCard: React.FC<{ icon: string; title: string; desc: string; delay: number; accent?: string }> = ({
-  icon,
+const ZCard: React.FC<{ img: string; title: string; desc: string; delay: number; accent?: string }> = ({
+  img,
   title,
   desc,
   delay,
@@ -421,7 +475,9 @@ const ZCard: React.FC<{ icon: string; title: string; desc: string; delay: number
         transform: `translateY(${(1 - p) * 40}px)`,
       }}
     >
-      <div style={{ fontSize: 42, marginBottom: 12 }}>{icon}</div>
+      <div style={{ marginBottom: 14 }}>
+        <BIcon src={img} size={68} />
+      </div>
       <div style={{ fontSize: 33, fontWeight: 800, color: accent, marginBottom: 8 }}>{title}</div>
       <div style={{ fontSize: 25, color: GRAY, lineHeight: 1.45 }}>{desc}</div>
     </div>
@@ -450,10 +506,10 @@ const Step1Scene: React.FC = () => (
           </div>
         </FadeUp>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22 }}>
-          <ZCard icon="🚗" title="통근형 z" desc="방문수 + 체류시간 + 입차 편차 + POS 수" delay={22} />
-          <ZCard icon="👜" title="팝업형 z" desc="체류시간 대비 POS 건수" delay={30} accent={BLUE} />
-          <ZCard icon="🏷️" title="브랜드 집중 z" desc="특정 브랜드 발행 집중 여부" delay={38} />
-          <ZCard icon="📈" title="급증 z" desc="최근 3일 POS 발행 급증" delay={46} accent={BLUE} />
+          <ZCard img="car.png" title="통근형 z" desc="방문수 + 체류시간 + 입차 편차 + POS 수" delay={22} />
+          <ZCard img="gift.png" title="팝업형 z" desc="체류시간 대비 POS 건수" delay={30} accent={BLUE} />
+          <ZCard img="label.png" title="브랜드 집중 z" desc="특정 브랜드 발행 집중 여부" delay={38} />
+          <ZCard img="chartline.png" title="급증 z" desc="최근 3일 POS 발행 급증" delay={46} accent={BLUE} />
         </div>
       </div>
       <FadeUp delay={62} style={{ flex: 0.9 }}>
@@ -465,7 +521,9 @@ const Step1Scene: React.FC = () => (
             color: "#fff",
           }}
         >
-          <div style={{ fontSize: 44, marginBottom: 22 }}>🎯</div>
+          <div style={{ marginBottom: 24 }}>
+            <BIcon src="target.png" size={82} bg="#fff" />
+          </div>
           <div style={{ fontSize: 34, fontWeight: 800, lineHeight: 1.55 }}>
             네 점수 중 <span style={{ color: "#ffd166" }}>최고값</span>을 종합 점수로 사용
           </div>
@@ -613,12 +671,12 @@ const Step2Scene: React.FC = () => {
 
 const Step3Scene: React.FC = () => {
   const frame = useCurrentFrame();
-  const steps = [
-    ["08:00", "Power BI 데이터 갱신", "📊"],
-    ["08:30", "데이터 가공 및 AI 판정", "🗄️"],
-    ["09:00", "Teams 알림 발송", "💬"],
-    ["담당자", "CCTV 확인", "🎥"],
-    ["완료", "확정 / 정상 처리", "✅"],
+  const steps: [string, string, string | null, string][] = [
+    ["08:00", "Power BI 데이터 갱신", "analytics.png", ""],
+    ["08:30", "데이터 가공 및 AI 판정", "fund.png", ""],
+    ["09:00", "Teams 알림 발송", "bell.png", ""],
+    ["담당자", "CCTV 확인", "cctv.png", ""],
+    ["완료", "확정 / 정상 처리", "check.png", ""],
   ];
   const cardP = useIn(60);
   return (
@@ -626,7 +684,7 @@ const Step3Scene: React.FC = () => {
       <div style={{ display: "flex", gap: 50, alignItems: "center" }}>
         {/* timeline */}
         <div style={{ flex: 0.95, display: "flex", flexDirection: "column", gap: 14 }}>
-          {steps.map(([time, desc, icon], i) => {
+          {steps.map(([time, desc, img], i) => {
             const p = spring({
               frame: frame - 8 - i * 13,
               fps: 30,
@@ -644,21 +702,7 @@ const Step3Scene: React.FC = () => {
                   transform: `translateX(${(1 - p) * 60}px)`,
                 }}
               >
-                <div
-                  style={{
-                    width: 72,
-                    height: 72,
-                    borderRadius: "50%",
-                    background: i === 4 ? GREEN_DARK : "#e7efe7",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 32,
-                    flexShrink: 0,
-                  }}
-                >
-                  {icon}
-                </div>
+                <BIcon src={img as string} size={72} bg={i === 4 ? "#cde7d6" : "#e7efe7"} />
                 <div
                   style={{
                     background: "#fff",
@@ -800,8 +844,11 @@ const FunnelScene: React.FC = () => {
           );
         })}
         <FadeUp delay={78}>
-          <div style={{ fontSize: 32, fontWeight: 800, color: INK, marginTop: 14 }}>
-            ⬇ 확정 시 실제 요금 <span style={{ color: GREEN }}>징수로 연결</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 14 }}>
+            <BIcon src="won.png" size={58} bg="#dbe9df" />
+            <span style={{ fontSize: 32, fontWeight: 800, color: INK }}>
+              확정 시 실제 요금 <span style={{ color: GREEN }}>징수로 연결</span>
+            </span>
           </div>
         </FadeUp>
       </div>
@@ -898,7 +945,7 @@ const ExpandScene: React.FC = () => {
         <div style={{ display: "flex", gap: 30, marginBottom: 36 }}>
           <FadeUp delay={8} style={{ flex: 1 }}>
             <div style={{ background: "#fff", border: "2px solid #dfe3dd", borderRadius: 20, padding: "30px 36px", display: "flex", gap: 22, alignItems: "center" }}>
-              <span style={{ fontSize: 44 }}>📅</span>
+              <BIcon src="cal1.png" size={78} />
               <div>
                 <div style={{ fontSize: 30, fontWeight: 800, color: GREEN_DARK }}>확정 차량</div>
                 <div style={{ fontSize: 25, color: GRAY, marginTop: 6 }}>4주(28일) 미알림 → 이후 패턴 재발 시 재알림</div>
@@ -907,7 +954,7 @@ const ExpandScene: React.FC = () => {
           </FadeUp>
           <FadeUp delay={18} style={{ flex: 1 }}>
             <div style={{ background: "#eef3fb", border: "2px solid #93b4e8", borderRadius: 20, padding: "30px 36px", display: "flex", gap: 22, alignItems: "center" }}>
-              <span style={{ fontSize: 44 }}>📅</span>
+              <BIcon src="cal2.png" size={78} bg="#dbe7f9" />
               <div>
                 <div style={{ fontSize: 30, fontWeight: 800, color: BLUE }}>정상 차량</div>
                 <div style={{ fontSize: 25, color: GRAY, marginTop: 6 }}>6개월 미알림 → 이후 재등록 필요</div>
@@ -916,9 +963,9 @@ const ExpandScene: React.FC = () => {
           </FadeUp>
         </div>
         <div style={{ display: "flex", gap: 30 }}>
-          <Card icon="🔗" title="확장성" desc="지점별 규모가 달라도 동일 로직 적용 가능" delay={34} />
-          <Card icon="🗄️" title="데이터 축적" desc="확정 이력을 활용해 AI 판정 정확도 지속 개선" delay={44} />
-          <Card icon="🔒" title="협업·보안" desc="AX기획팀 협업 및 내부 보안 검토 기반 운영" delay={54} />
+          <Card img="scale.png" title="확장성" desc="지점별 규모가 달라도 동일 로직 적용 가능" delay={34} />
+          <Card img="fund.png" title="데이터 축적" desc="확정 이력을 활용해 AI 판정 정확도 지속 개선" delay={44} />
+          <Card img="lock.png" title="협업·보안" desc="AX기획팀 협업 및 내부 보안 검토 기반 운영" delay={54} />
         </div>
       </SceneShell>
       <AbsoluteFill
@@ -930,7 +977,10 @@ const ExpandScene: React.FC = () => {
         }}
       >
         <div style={{ opacity: outroP, transform: `translateY(${(1 - outroP) * 50}px)`, textAlign: "center" }}>
-          <div style={{ fontSize: 76, marginBottom: 32 }}>🎯</div>
+          <div style={{ display: "flex", gap: 40, justifyContent: "center", marginBottom: 40 }}>
+            <Medallion src="badge-commuter.jpg" size={170} />
+            <Medallion src="badge-popup.jpg" size={170} />
+          </div>
           <div style={{ fontSize: 70, fontWeight: 900, color: "#fff", lineHeight: 1.35 }}>
             전 지점 부정주차 관리 체계로
             <br />
