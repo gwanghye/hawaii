@@ -443,11 +443,11 @@ const FlowScene: React.FC = () => {
   return (
     <SceneShell title="한눈에 보는 운영 구조 — 매일 3단계">
       <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
-        <FlowBox tag="1. 통계 선별" img="analytics.png" tool="Power BI" lines={["주차 raw 데이터", "z점수로 후보 추출"]} delay={8} />
+        <FlowBox tag="1. 통계 선별" img="powerbi.png" tool="Power BI" lines={["주차 raw 데이터", "z점수로 후보 추출"]} delay={8} />
         <div style={{ fontSize: 60, color: "#9aa79e", fontWeight: 900, opacity: a1 }}>➜</div>
-        <FlowBox tag="2. AI 판정" icon="🧠" tool="AI 분석" lines={["의심 · 보류 · 정상", "신뢰도 상 · 중 · 하"]} delay={32} />
+        <FlowBox tag="2. AI 판정" img="copilot.png" tool="AI 분석 (Copilot)" lines={["의심 · 보류 · 정상", "신뢰도 상 · 중 · 하"]} delay={32} />
         <div style={{ fontSize: 60, color: "#9aa79e", fontWeight: 900, opacity: a2 }}>➜</div>
-        <FlowBox tag="3. 담당자 확정" img="check.png" tool="Teams" lines={["Teams 알림 → CCTV 확인", "→ 징수"]} delay={56} />
+        <FlowBox tag="3. 담당자 확정" img="teams.png" tool="Microsoft Teams" lines={["Teams 알림 → CCTV 확인", "→ 징수"]} delay={56} />
       </div>
       <Banner text="고정 임계값이 아닌 상대 비교와 AI 맥락 판단으로, 통근형과 팝업형을 모두 놓치지 않도록 설계" delay={95} />
     </SceneShell>
@@ -672,9 +672,9 @@ const Step2Scene: React.FC = () => {
 const Step3Scene: React.FC = () => {
   const frame = useCurrentFrame();
   const steps: [string, string, string | null, string][] = [
-    ["08:00", "Power BI 데이터 갱신", "analytics.png", ""],
-    ["08:30", "데이터 가공 및 AI 판정", "fund.png", ""],
-    ["09:00", "Teams 알림 발송", "bell.png", ""],
+    ["08:00", "Power BI 데이터 갱신", "powerbi.png", ""],
+    ["08:30", "데이터 가공 및 AI 판정", "copilot.png", ""],
+    ["09:00", "Teams 알림 발송", "teams.png", ""],
     ["담당자", "CCTV 확인", "cctv.png", ""],
     ["완료", "확정 / 정상 처리", "check.png", ""],
   ];
@@ -752,6 +752,11 @@ const Step3Scene: React.FC = () => {
             transform: `translateY(${(1 - cardP) * 60}px)`,
           }}
         >
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16, paddingBottom: 14, borderBottom: "1px solid #e5e8e2" }}>
+            <Img src={staticFile("brand/teams.png")} style={{ width: 40, height: 40, objectFit: "contain" }} />
+            <span style={{ fontSize: 24, fontWeight: 700, color: "#444f57" }}>Microsoft Teams · 워크플로</span>
+            <span style={{ marginLeft: "auto", fontSize: 22, color: "#8a968d" }}>09:00</span>
+          </div>
           <div style={{ fontSize: 30, fontWeight: 900, color: RED, marginBottom: 6 }}>🚨 부정주차 의심 차량</div>
           <div style={{ fontSize: 23, color: GRAY, marginBottom: 20 }}>🔵 CCTV 확인 후 버튼을 눌러주세요</div>
           <div style={{ border: `3px solid ${RED}`, borderRadius: 12, padding: "16px 22px", marginBottom: 20 }}>
