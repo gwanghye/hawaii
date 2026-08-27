@@ -1,7 +1,6 @@
 import React, { createContext, useContext } from "react";
 import {
   AbsoluteFill,
-  Audio,
   Img,
   Series,
   interpolate,
@@ -11,7 +10,7 @@ import {
   useVideoConfig,
 } from "remotion";
 
-/* scene durations (30fps) — paced for comfortable reading, ~1min 40s total */
+/* scene durations (30fps) — paced for comfortable reading, no background music */
 const D_TITLE = 125;
 const D_PROBLEM = 275;
 const D_TYPES = 325;
@@ -19,11 +18,12 @@ const D_FLOW = 275;
 const D_STEP1 = 325;
 const D_STEP2 = 375;
 const D_STEP3 = 425;
-const D_FUNNEL = 325;
+const D_FUNNEL = 300;
+const D_RESULT = 300;
 const D_COMPARE = 275;
 const D_EXPAND = 275;
 export const TOTAL_FRAMES =
-  D_TITLE + D_PROBLEM + D_TYPES + D_FLOW + D_STEP1 + D_STEP2 + D_STEP3 + D_FUNNEL + D_COMPARE + D_EXPAND; // 3000 = 100s
+  D_TITLE + D_PROBLEM + D_TYPES + D_FLOW + D_STEP1 + D_STEP2 + D_STEP3 + D_FUNNEL + D_RESULT + D_COMPARE + D_EXPAND; // 3275 ≈ 109s
 
 const GREEN_DARK = "#123524";
 const GREEN = "#1f5c3d";
@@ -934,6 +934,105 @@ const FunnelScene: React.FC = () => {
   );
 };
 
+/* ================= Scene 8b: Real operating results (donut) ================= */
+
+const Donut: React.FC<{ pct: number; delay: number; size?: number }> = ({ pct, delay, size = 260 }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const p = spring({ frame: frame - delay, fps, config: { damping: 200 }, durationInFrames: 60 });
+  const shown = pct * p;
+  const r = size / 2 - 22;
+  const c = 2 * Math.PI * r;
+  const offset = c * (1 - shown / 100);
+  return (
+    <div style={{ position: "relative", width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#dfe6e0" strokeWidth={22} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke={BLUE}
+          strokeWidth={22}
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <span style={{ fontSize: size * 0.19, fontWeight: 900, color: BLUE }}>{shown.toFixed(1)}%</span>
+      </div>
+    </div>
+  );
+};
+
+const ResultStat: React.FC<{ img: string; label: string; sub: string; value: string; pct: string; delay: number; accent?: string }> = ({
+  img,
+  label,
+  sub,
+  value,
+  pct,
+  delay,
+  accent = INK,
+}) => {
+  const v = useVert();
+  const p = useIn(delay, 14);
+  return (
+    <div
+      style={{
+        flex: 1,
+        background: "#fff",
+        border: "2px solid #dfe3dd",
+        borderRadius: 18,
+        padding: v ? "20px 18px" : "26px 24px",
+        textAlign: "center",
+        opacity: Math.min(1, p * 1.4),
+        transform: `scale(${0.8 + p * 0.2})`,
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+        <BIcon src={img} size={v ? 56 : 66} />
+      </div>
+      <div style={{ fontSize: v ? 20 : 23, fontWeight: 700, color: GRAY, lineHeight: 1.4 }}>{label}</div>
+      <div style={{ fontSize: v ? 15 : 17, color: "#8a968d", marginBottom: 10 }}>{sub}</div>
+      <div style={{ fontSize: v ? 34 : 40, fontWeight: 900, color: accent }}>{value}</div>
+      <div style={{ fontSize: v ? 20 : 23, fontWeight: 700, color: accent }}>{pct}</div>
+    </div>
+  );
+};
+
+const ResultScene: React.FC = () => {
+  const v = useVert();
+  return (
+    <SceneShell title="실제 운영 결과 — 2026.07~08">
+      <div style={{ display: "flex", flexDirection: v ? "column" : "row", gap: v ? 30 : 60, alignItems: "center" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: v ? "column" : "row", gap: v ? 16 : 22 }}>
+          <ResultStat img="copilot.png" label="AI 단독 적발" sub="(RMD 미탐지)" value="5건" pct="45.5%" delay={15} accent={BLUE} />
+          <ResultStat img="check.png" label="공동 적발" sub="(RMD + AI)" value="3건" pct="27.3%" delay={45} />
+          <ResultStat img="cctv.png" label="RMD 단독" sub="" value="3건" pct="27.3%" delay={75} accent={ORANGE} />
+        </div>
+        <FadeUp delay={110} style={{ flex: v ? undefined : 0.85, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Donut pct={72.7} delay={110} size={v ? 220 : 260} />
+          <div style={{ fontSize: v ? 24 : 27, fontWeight: 800, color: INK, marginTop: 18, textAlign: "center" }}>
+            AI 관여 건수 <span style={{ color: BLUE }}>8건 (72.7%)</span>
+          </div>
+        </FadeUp>
+      </div>
+      <Banner text="AI가 기존 RMD 운영을 보완하여 추가 적발과 부정주차 억제 효과 창출" delay={190} />
+    </SceneShell>
+  );
+};
+
 /* ================= Scene 9: RMD comparison ================= */
 
 const COMPARE: [string, string, string][] = [
@@ -1066,15 +1165,6 @@ export const ParkingVideo: React.FC<{ vertical?: boolean }> = ({ vertical = fals
   return (
     <VertCtx.Provider value={vertical}>
       <AbsoluteFill style={{ background: BG }}>
-        <Audio
-          src={staticFile("music.wav")}
-          volume={(f) =>
-            interpolate(f, [0, 60, TOTAL_FRAMES - 150, TOTAL_FRAMES - 10], [0, 0.3, 0.3, 0], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            })
-          }
-        />
         <Series>
           <Series.Sequence durationInFrames={D_TITLE}>
             <TitleScene />
@@ -1099,6 +1189,9 @@ export const ParkingVideo: React.FC<{ vertical?: boolean }> = ({ vertical = fals
           </Series.Sequence>
           <Series.Sequence durationInFrames={D_FUNNEL}>
             <FunnelScene />
+          </Series.Sequence>
+          <Series.Sequence durationInFrames={D_RESULT}>
+            <ResultScene />
           </Series.Sequence>
           <Series.Sequence durationInFrames={D_COMPARE}>
             <CompareScene />
