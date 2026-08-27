@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from "react";
 import {
   AbsoluteFill,
+  Audio,
   Img,
   Series,
   interpolate,
@@ -10,20 +11,20 @@ import {
   useVideoConfig,
 } from "remotion";
 
-/* scene durations (30fps) — paced for comfortable reading, no background music */
+/* scene durations (30fps) — paced for comfortable reading */
 const D_TITLE = 125;
 const D_PROBLEM = 275;
 const D_TYPES = 325;
-const D_FLOW = 275;
+const D_FLOW = 400;
 const D_STEP1 = 325;
 const D_STEP2 = 375;
 const D_STEP3 = 425;
 const D_FUNNEL = 300;
 const D_RESULT = 300;
 const D_COMPARE = 275;
-const D_EXPAND = 275;
+const D_EXPAND = 450;
 export const TOTAL_FRAMES =
-  D_TITLE + D_PROBLEM + D_TYPES + D_FLOW + D_STEP1 + D_STEP2 + D_STEP3 + D_FUNNEL + D_RESULT + D_COMPARE + D_EXPAND; // 3275 ≈ 109s
+  D_TITLE + D_PROBLEM + D_TYPES + D_FLOW + D_STEP1 + D_STEP2 + D_STEP3 + D_FUNNEL + D_RESULT + D_COMPARE + D_EXPAND; // 3575 ≈ 119s
 
 const GREEN_DARK = "#123524";
 const GREEN = "#1f5c3d";
@@ -480,7 +481,7 @@ const FlowScene: React.FC = () => {
         <div style={{ fontSize: v ? 40 : 60, color: "#9aa79e", fontWeight: 900, opacity: a2 }}>{arrow}</div>
         <FlowBox tag="3. 담당자 확정" img="teams.png" tool="Microsoft Teams" lines={["Teams 알림 → CCTV 확인", "→ 징수"]} delay={140} />
       </div>
-      <Banner text="고정 임계값이 아닌 상대 비교와 AI 맥락 판단으로, 통근형과 팝업형을 모두 놓치지 않도록 설계" delay={210} />
+      <Banner text="고정 임계값이 아닌 상대 비교와 AI 맥락 판단으로, 통근형과 팝업형을 모두 놓치지 않도록 설계" delay={195} />
     </SceneShell>
   );
 };
@@ -1014,7 +1015,7 @@ const ResultStat: React.FC<{ img: string; label: string; sub: string; value: str
 const ResultScene: React.FC = () => {
   const v = useVert();
   return (
-    <SceneShell title="실제 운영 결과 — 2026.07~08">
+    <SceneShell title="실제 운영 결과 — 본점 · 2026.07~08">
       <div style={{ display: "flex", flexDirection: v ? "column" : "row", gap: v ? 30 : 60, alignItems: "center" }}>
         <div style={{ flex: 1, display: "flex", flexDirection: v ? "column" : "row", gap: v ? 16 : 22 }}>
           <ResultStat img="copilot.png" label="AI 단독 적발" sub="(RMD 미탐지)" value="5건" pct="45.5%" delay={15} accent={BLUE} />
@@ -1097,8 +1098,8 @@ const ExpandScene: React.FC = () => {
   const v = useVert();
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
-  const outroP = spring({ frame: frame - 170, fps, config: { damping: 200 }, durationInFrames: 35 });
-  const dim = interpolate(frame, [155, 183], [0, 1], {
+  const outroP = spring({ frame: frame - 345, fps, config: { damping: 200 }, durationInFrames: 35 });
+  const dim = interpolate(frame, [330, 360], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -1165,6 +1166,16 @@ export const ParkingVideo: React.FC<{ vertical?: boolean }> = ({ vertical = fals
   return (
     <VertCtx.Provider value={vertical}>
       <AbsoluteFill style={{ background: BG }}>
+        <Audio
+          src={staticFile("music.mp3")}
+          loop
+          volume={(f) =>
+            interpolate(f, [0, 45, TOTAL_FRAMES - 60, TOTAL_FRAMES - 5], [0, 0.22, 0.22, 0], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            })
+          }
+        />
         <Series>
           <Series.Sequence durationInFrames={D_TITLE}>
             <TitleScene />
