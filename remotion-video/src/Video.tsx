@@ -618,11 +618,11 @@ const Verdict: React.FC<{ label: string; icon: string; color: string; desc: stri
 };
 
 const LOG_ROWS: [string, string, string, string, string][] = [
-  ["46머7935", "24.34", "의심", "통근형", "상"],
-  ["69저2183", "12.56", "의심", "팝업형", "상"],
-  ["369고9592", "25.81", "의심", "통근형", "상"],
-  ["247라8517", "15.88", "의심", "통근형", "상"],
-  ["52서7206", "11.47", "의심", "팝업형", "상"],
+  ["46머XXXX", "24.34", "의심", "통근형", "상"],
+  ["69저XXXX", "12.56", "의심", "팝업형", "상"],
+  ["369고XXXX", "25.81", "의심", "통근형", "상"],
+  ["247라XXXX", "15.88", "의심", "통근형", "상"],
+  ["52서XXXX", "11.47", "의심", "팝업형", "상"],
 ];
 
 const Step2Scene: React.FC = () => {
@@ -809,9 +809,9 @@ const Step3Scene: React.FC = () => {
           <div style={{ fontSize: v ? 20 : 23, color: GRAY, marginBottom: 20 }}>🔵 CCTV 확인 후 버튼을 눌러주세요</div>
           <div style={{ border: `3px solid ${RED}`, borderRadius: 12, padding: "16px 22px", marginBottom: 20 }}>
             {[
-              ["차량번호", "247라8517"],
+              ["차량번호", "247라XXXX"],
               ["유형", "통근형 (신뢰도 상)"],
-              ["주력브랜드", "앤헤이븐"],
+              ["주력브랜드", "△△매장"],
             ].map(([k, val]) => (
               <div key={k} style={{ display: "flex", fontSize: v ? 23 : 26, padding: "5px 0" }}>
                 <span style={{ width: v ? 150 : 180, color: "#7c8a80", fontWeight: 600 }}>{k}</span>
@@ -1005,7 +1005,7 @@ const ResultStat: React.FC<{ img: string; label: string; sub: string; value: str
         <BIcon src={img} size={v ? 56 : 66} />
       </div>
       <div style={{ fontSize: v ? 20 : 23, fontWeight: 700, color: GRAY, lineHeight: 1.4 }}>{label}</div>
-      <div style={{ fontSize: v ? 15 : 17, color: "#8a968d", marginBottom: 10 }}>{sub}</div>
+      <div style={{ fontSize: v ? 15 : 17, color: "#8a968d", marginBottom: 10, minHeight: v ? 20 : 22 }}>{sub || " "}</div>
       <div style={{ fontSize: v ? 34 : 40, fontWeight: 900, color: accent }}>{value}</div>
       <div style={{ fontSize: v ? 20 : 23, fontWeight: 700, color: accent }}>{pct}</div>
     </div>
